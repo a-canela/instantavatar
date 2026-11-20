@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>InstantAvatar: Efficient 3D Head Reconstruction via Surface Rendering</title>
+  <!-- The official project page is hosted by Crisalix (https://crisalixsa.github.io/instant-avatar/).
+       This copy is kept out of search engine results so that it never competes with the official page. -->
+  <meta name="robots" content="noindex, follow">
+  <meta name="description" content="InstantAvatar (3DV 2024) combines a multi-resolution voxel-grid neural field with differentiable surface rendering and a learned 3D head SDF shape prior to reconstruct full-head avatars from one or a few images in seconds.">
+  <meta name="author" content="Antonio Canela, Pol Caselles, Ibrar Malik, Eduard Ramon, Jaime García, Jordi Sànchez-Riera, Gil Triginer, Francesc Moreno-Noguer">
+  <meta name="theme-color" content="#14325a">
+
+  <!-- Open Graph / social (link previews) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="InstantAvatar: Efficient 3D Head Reconstruction via Surface Rendering">
+  <meta property="og:description" content="Full-head 3D avatars from one or a few images in a matter of seconds. 3DV 2024.">
+  <meta property="og:url" content="https://a-canela.github.io/instantavatar/">
+  <meta property="og:image" content="https://a-canela.github.io/instantavatar/static/images/method.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="InstantAvatar (3DV 2024)">
+  <meta name="twitter:description" content="Efficient 3D head reconstruction via surface rendering.">
+  <meta name="twitter:image" content="https://a-canela.github.io/instantavatar/static/images/method.png">
+
+  <link rel="icon" href="static/images/favicon.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400;1,8..60,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.5/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/style.css">
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+
+<body>
+<a class="skip-link" href="#overview">Skip to content</a>
+
+<!-- ============================== HERO ============================== -->
+<header class="hero" id="top">
+  <div class="hero-glow" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="wrap">
+    <h1 class="masthead"><span class="brand-1">Instant</span><span class="brand-2">Avatar</span></h1>
+    <p class="paper-title">Efficient 3D Head Reconstruction via Surface&nbsp;Rendering</p>
+
+    <div class="authors">
+      <span>Antonio Canela<sup>1,2,3</sup></span>
+      <span>Pol Caselles<sup>1,2,3</sup></span>
+      <span>Ibrar Malik<sup>1,2,3</sup></span>
+      <span>Eduard Ramon<sup>1,2*</sup></span>
+      <span>Jaime García<sup>1</sup></span>
+      <span>Jordi Sànchez-Riera<sup>3</sup></span>
+      <span>Gil Triginer<sup>1</sup></span>
+      <span>Francesc Moreno-Noguer<sup>3*</sup></span>
+    </div>
+    <div class="affiliations">
+      <span><sup>1</sup>Crisalix Labs</span>
+      <span><sup>2</sup>Universitat Politècnica de Catalunya</span>
+      <span><sup>3</sup>Institut de Robòtica i Informàtica Industrial, CSIC-UPC</span>
+    </div>
+    <div class="affiliations note">
+      <span><sup>*</sup>This work was done prior to joining Amazon</span>
+    </div>
+
+    <div class="aff-logos">
+      <a href="https://www.crisalix.com/" target="_blank" rel="noopener" title="Crisalix"><img class="logo-crisalix" src="static/images/crisalix.svg" alt="Crisalix"></a>
+      <a href="https://www.upc.edu/" target="_blank" rel="noopener" title="Universitat Politècnica de Catalunya"><img class="logo-upc" src="static/images/upc.png" alt="Universitat Politècnica de Catalunya (UPC)"></a>
+      <a href="https://www.iri.upc.edu/" target="_blank" rel="noopener" title="Institut de Robòtica i Informàtica Industrial"><img src="static/images/iri.png" alt="Institut de Robòtica i Informàtica Industrial (IRI)"></a>
+      <a href="https://www.csic.es/" target="_blank" rel="noopener" title="Consejo Superior de Investigaciones Científicas"><img src="static/images/csic.svg" alt="Consejo Superior de Investigaciones Científicas (CSIC)"></a>
+    </div>
+
+    <p class="conference">
+      <span class="conf-line" tabindex="0" aria-describedby="conf-stats">Accepted at the <strong>International Conference on 3D Vision (<a href="https://3dvconf.github.io/2024/" target="_blank" rel="noopener noreferrer">3DV 2024</a>)</strong>
+        <span class="conf-tip" id="conf-stats" role="tooltip">
+          <span class="conf-tip-row"><span>Acceptance rate</span><b>48.4%</b></span>
+        </span>
+      </span>
+    </p>
+
+    <nav class="link-buttons" aria-label="Paper resources">
+      <a class="btn" href="https://arxiv.org/abs/2308.04868" target="_blank" rel="noopener">
+        <span class="icon"><i class="ai ai-arxiv" aria-hidden="true"></i></span><span>Paper</span>
+      </a>
+    </nav>
+
+    <p class="official-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.01"/></svg>
+      <span>Official project page, hosted by Crisalix: <a href="https://crisalixsa.github.io/instant-avatar/" target="_blank" rel="noopener">crisalixsa.github.io/instant-avatar</a></span>
+    </p>
+  </div>
+</header>
+
+<!-- ============================== SECTION NAV ============================== -->
+<nav class="section-nav" aria-label="Sections">
+  <div class="wrap">
+    <a class="nav-brand" href="#top"><span class="brand-1">Instant</span><span class="brand-2">Avatar</span></a>
+    <div class="nav-links">
+      <a class="nav-link" href="#overview">Overview</a>
+      <a class="nav-link" href="#results">Results</a>
+      <a class="nav-link" href="#code">Code</a>
+      <a class="nav-link" href="#acknowledgments" aria-label="Acknowledgments"><span class="nav-long">Acknowledgments</span><span class="nav-short">Funding</span></a>
+      <a class="nav-link" href="#citation">Cite</a>
+    </div>
+    <span class="nav-spacer" aria-hidden="true"></span>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============================== OVERVIEW ============================== -->
+<section class="section" id="overview">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">01 — Overview</p>
+      <h2>Overview.</h2>
+    </div>
+
+    <div class="abstract-grid" id="abstract">
+      <div class="abstract reveal">
+        <h3>Abstract</h3>
+        <p>Recent advances in full-head reconstruction have been obtained by optimizing a neural field through differentiable surface or volume rendering to represent a single scene. While these techniques achieve an unprecedented accuracy, they take several minutes, or even hours, due to the expensive optimization process required. In this work, we introduce InstantAvatar, a method that recovers full-head avatars from few images (down to just one) in a few seconds on commodity hardware. In order to speed up the reconstruction process, we propose a system that combines, for the first time, a voxel-grid neural field representation with a surface renderer. Notably, a naive combination of these two techniques leads to unstable optimizations that do not converge to valid solutions. In order to overcome this limitation, we present a novel statistical model that learns a prior distribution over 3D head signed distance functions using a voxel-grid based architecture. The use of this prior model, in combination with other design choices, results into a system that achieves 3D head reconstructions with comparable accuracy as the state-of-the-art with a 100x speed-up.</p>
+      </div>
+      <figure class="figure reveal">
+        <a href="static/images/teaser.png" target="_blank" rel="noopener" aria-label="Open Figure 1 at full resolution">
+          <img src="static/images/teaser.png" width="1000" height="735" alt="Reconstruction time versus reconstruction error for InstantAvatar and state-of-the-art methods.">
+        </a>
+        <figcaption><span class="fig-num">Figure 1.</span> <b>Reconstruction time comparison.</b> InstantAvatar is a method that obtains full head 3D avatars from one or few images in a matter of seconds. This figure reports the time vs reconstruction error for ours and state-of-the-art methods, when considering only the face region where all methods are applicable (full head error metrics are reported at the experiments section). InstantAvatar speed is only surpassed by 3DMM methods, which, however are significantly less accurate. Compared against other neural field approaches, InstantAvatar obtains a 100x speed up at similar reconstruction error values.</figcaption>
+      </figure>
+    </div>
+
+    <div class="subsection" id="method">
+      <div class="subsection-head reveal">
+        <h3>Method</h3>
+      </div>
+
+      <div class="insight-grid">
+        <div class="prose-card reveal">
+          <p>Combined with some techniques originated from a few key insights, our 3D reconstruction pipeline builds on top of <a href="https://arxiv.org/abs/2003.09852" target="_blank" rel="noopener">IDR</a> and <a href="https://arxiv.org/abs/2107.12512" target="_blank" rel="noopener">H3D-Net</a>. We find that surface rendering is more computationally efficient than volumetric rendering since its sampling size is considerably smaller. Therefore, we show that using grid-based representations together with this rendering method increase the convergence speed significantly. However, both of these concepts make the optimization process more challenging in terms of stability. In order to diminish these side effects: we employ a statistical shape prior for guiding the optimization first steps through a valid latent space; using progressive key schedules to make proper usage of each level-of-detail (similar to concurrent work <a href="https://arxiv.org/abs/2306.03092/" target="_blank" rel="noopener">Neuralangelo</a>); and supervising with normal cues for increasing its robustness.</p>
+        </div>
+        <figure class="figure reveal">
+          <a href="static/images/key_insights.png" target="_blank" rel="noopener" aria-label="Open Figure 2 at full resolution">
+            <img src="static/images/key_insights.png" width="847" height="438" loading="lazy" alt="Key insights regarding speed and stability.">
+          </a>
+          <figcaption><span class="fig-num">Figure 2.</span> <b>Key insights regarding speed and stability.</b></figcaption>
+        </figure>
+      </div>
+
+      <figure class="figure wide reveal">
+        <a href="static/images/method.png" target="_blank" rel="noopener" aria-label="Open Figure 3 at full resolution">
+          <img src="static/images/method.png" width="1900" height="922" loading="lazy" alt="Overview of the InstantAvatar method: multi-resolution feature grid, SDF network, normal supervision and rendering network.">
+        </a>
+        <figcaption><span class="fig-num">Figure 3.</span> <b>Overview of our method.</b> For each query point <b>x</b> we obtain the feature <b>z(x)</b> from the multi-resolution feature grid at different levels of detail. Afterwards, we concatenate the positional encoding applied to <b>x</b>, the global feature <b>g<sub>i</sub></b>, and the grid feature <b>z(x)</b> to query the SDF parameterized by a shallow MLP. We supervise the gradient of the SDF with the predicted normal at the pixel location where the ray intersects. Finally, we use a rendering network to predict the radiance emitted from the surface point <b>x<sub>diff</sub></b> , with normal <b>n</b>, in a viewing direction <b>v</b>.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== RESULTS ============================== -->
+<section class="section alt" id="results">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">02 — Results</p>
+      <h2>Results.</h2>
+      <p class="lead">The proposed method is compared against parametric model-based methods like <a href="https://arxiv.org/abs/2012.04012" target="_blank" rel="noopener">DECA</a> in single-view face reconstruction, and per-scene-optimization approaches like <a href="https://openaccess.thecvf.com/content/ICCV2021/html/Ramon_H3D-Net_Few-Shot_High-Fidelity_3D_Head_Reconstruction_ICCV_2021_paper.html" target="_blank" rel="noopener">H3D-Net</a> and <a href="https://arxiv.org/abs/2209.03027" target="_blank" rel="noopener">SIRA</a> in single-view and multi-view full-head reconstruction, using the <a href="https://openaccess.thecvf.com/content/ICCV2021/html/Ramon_H3D-Net_Few-Shot_High-Fidelity_3D_Head_Reconstruction_ICCV_2021_paper.html" target="_blank" rel="noopener">H3DS</a> dataset.</p>
+    </div>
+
+    <div class="results-stack">
+      <figure class="figure wide reveal">
+        <a href="static/images/qualitative_experiments_front.png" target="_blank" rel="noopener" aria-label="Open Figure 4 at full resolution">
+          <img src="static/images/qualitative_experiments_front.png" width="1849" height="850" loading="lazy" alt="Qualitative comparison of InstantAvatar with SIRA, DECA and H3D-Net on the H3DS dataset for 1, 3 and 6 views.">
+        </a>
+        <figcaption><span class="fig-num">Figure 4.</span> <b>Qualitative results.</b> We compare qualitatively InstantAvatar with other state of the art methods on H3DS dataset for 1 view, 3 views and 6 views. 1 view: SIRA is able to better capture the identity of the subject, however, it takes 10 min of training. DECA on the other hand, can only predict the face region. 3 views: H3D-Net achieves good bias but at a high variance where we can clearly see artifacts on the chin and the hair. 6 views: H3D-Net is able to recover the hair and face regions with similar quality as InstantAvatar.</figcaption>
+      </figure>
+
+      <div class="fig-pair">
+        <figure class="figure reveal">
+          <a href="static/images/qualitative_ablation.png" target="_blank" rel="noopener" aria-label="Open Figure 5 at full resolution">
+            <img src="static/images/qualitative_ablation.png" width="1484" height="555" loading="lazy" alt="Ablation study: qualitative comparison of variations of the model on an H3DS scene with 6 views.">
+          </a>
+          <figcaption><span class="fig-num">Figure 5.</span> <b>Ablation: Qualitative comparison.</b> We conduct an ablation study to qualitatively compare variations of our model using a H3Ds dataset scene in the multi-view setting (6 views). The bottom row zooms into the face region to better appreciate the differences among configurations. Both our final approach and the one without normals supervision outperform the rest of alternatives. However, when normals supervision is not considered the resulting shape tends to be excessively sharp (e.g. the outermost part of the eyebrows) or erroneous (hair). The single grid and the 8-layer MLP (without grid) results are comparable, although they are both unable to capture the high-frequency details obtained with our final model.</figcaption>
+        </figure>
+        <figure class="figure reveal">
+          <a href="static/images/celeb2.jpg" target="_blank" rel="noopener" aria-label="Open Figure 6 at full resolution">
+            <img src="static/images/celeb2.jpg" width="3538" height="1468" loading="lazy" alt="InstantAvatar results on the CelebHQ dataset for a single input image.">
+          </a>
+          <figcaption><span class="fig-num">Figure 6.</span> <b>Qualitative results.</b> InstantAvatar results on CelebHQ dataset for a single input image.</figcaption>
+        </figure>
+      </div>
+
+      <div class="recon-grid">
+        <figure class="figure reveal">
+          <div class="recon-pair">
+            <a href="static/images/reconstruction/1view_input.jpg" target="_blank" rel="noopener" aria-label="Open the input image (1 view)"><img src="static/images/reconstruction/1view_input.jpg" width="512" height="512" loading="lazy" alt="Input image (1 view)."></a>
+            <a href="static/images/reconstruction/1view_optimization.gif" target="_blank" rel="noopener" aria-label="Open the optimization animation (1 view)"><img src="static/images/reconstruction/1view_optimization.gif" width="512" height="512" loading="lazy" alt="Animation of the 3D reconstruction optimization process from 1 view."></a>
+          </div>
+          <figcaption><span class="fig-num">Figure 7.</span> <b>3D reconstruction optimization process</b> on commodity hardware (input: <b>1 view</b>).</figcaption>
+        </figure>
+        <figure class="figure reveal">
+          <div class="recon-pair">
+            <a href="static/images/reconstruction/3views_input.jpg" target="_blank" rel="noopener" aria-label="Open the input image (3 views)"><img src="static/images/reconstruction/3views_input.jpg" width="512" height="512" loading="lazy" alt="Input image (3 views)."></a>
+            <a href="static/images/reconstruction/3views_optimization.gif" target="_blank" rel="noopener" aria-label="Open the optimization animation (3 views)"><img src="static/images/reconstruction/3views_optimization.gif" width="512" height="512" loading="lazy" alt="Animation of the 3D reconstruction optimization process from 3 views."></a>
+          </div>
+          <figcaption><span class="fig-num">Figure 8.</span> <b>3D reconstruction optimization process</b> on commodity hardware (input: <b>3 views</b>).</figcaption>
+        </figure>
+        <figure class="figure reveal">
+          <div class="recon-pair">
+            <a href="static/images/reconstruction/6views_input.jpg" target="_blank" rel="noopener" aria-label="Open the input image (6 views)"><img src="static/images/reconstruction/6views_input.jpg" width="512" height="512" loading="lazy" alt="Input image (6 views)."></a>
+            <a href="static/images/reconstruction/6views_optimization.gif" target="_blank" rel="noopener" aria-label="Open the optimization animation (6 views)"><img src="static/images/reconstruction/6views_optimization.gif" width="512" height="512" loading="lazy" alt="Animation of the 3D reconstruction optimization process from 6 views."></a>
+          </div>
+          <figcaption><span class="fig-num">Figure 9.</span> <b>3D reconstruction optimization process</b> on commodity hardware (input: <b>6 views</b>).</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== CODE ============================== -->
+<section class="section" id="code">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">03 — Code</p>
+      <h2>Code.</h2>
+    </div>
+    <div class="unavailable-card reveal">
+      <span class="status-pill"><span class="dot" aria-hidden="true"></span>Unavailable</span>
+      <p>This work was conducted as part of an industrial research collaboration with <strong>Crisalix Labs</strong>. Consequently, the underlying source code and trained models are proprietary assets of <strong>Crisalix SA</strong> and cannot be made publicly available.</p>
+      <p>This repository only hosts the project page for the publication. For further technical details regarding the architecture, training schedule, and evaluation setup, please refer to the <a href="https://arxiv.org/abs/2308.04868" target="_blank" rel="noopener">paper on arXiv</a>.</p>
+      <div class="link-buttons" style="justify-content:flex-start;margin-top:22px">
+        <a class="btn" href="https://arxiv.org/abs/2308.04868" target="_blank" rel="noopener">
+          <span class="icon"><i class="ai ai-arxiv" aria-hidden="true"></i></span><span>Read the paper</span>
+        </a>
+        <a class="btn light" href="https://crisalixsa.github.io/instant-avatar/" target="_blank" rel="noopener">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></span><span>Official project page</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== ACKNOWLEDGMENTS ============================== -->
+<section class="section alt" id="acknowledgments">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">04 — Acknowledgments</p>
+      <h2>Acknowledgments.</h2>
+    </div>
+    <div class="ack reveal">
+      <p>This work has been partially supported by: MoHuCo PID2020-120049RB-I00 funded by MCIN/AEI/10.13039/501100011033; DeeLight PID2020-117142GB-I00 funded by MCIN/ AEI /10.13039/501100011033; and the industrial doctorate 2021 DI 00102 funded by the Government of Catalonia.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== CITATION ============================== -->
+<section class="section" id="citation">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">05 — Cite</p>
+      <h2>Citation.</h2>
+      <p class="lead">If you find our work useful, please consider citing it:</p>
+    </div>
+    <div class="code-block reveal" style="max-width:1500px">
+      <div class="code-title"><span>BibTeX</span><button type="button" class="copy-btn" data-copy="#bibtex">Copy</button></div>
+<pre id="bibtex"><span class="k">@inproceedings</span>{canela2024instantavatar,
+  title={InstantAvatar: Efficient 3D Head Reconstruction via Surface Rendering},
+  author={Canela, Antonio and Caselles, Pol and Malik, Ibrar and Ramon, Eduard and Garcia, Jaime and Sanchez-Riera, Jordi and Triginer, Gil and Moreno-Noguer, Francesc},
+  booktitle = {International Conference on 3D Vision (3DV)},
+  year={2024}
+}</pre>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================== FOOTER ============================== -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="footer-brand"><span class="brand-1">Instant</span><span class="brand-2">Avatar</span></div>
+        <p>Efficient 3D Head Reconstruction via Surface Rendering.</p>
+        <p>The official project page is hosted by Crisalix at <a href="https://crisalixsa.github.io/instant-avatar/" target="_blank" rel="noopener">crisalixsa.github.io/instant-avatar</a>. This page reproduces its content for archival purposes.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Thanks</h4>
+        <p>The page layout is adapted from the project page of <a href="https://a-canela.github.io/manifoldsplat/" target="_blank" rel="noopener">ManifoldSplat</a>, whose header with affiliation logos and section navigation are inspired by the project pages of <a href="https://aolivtous.github.io/publications/mumins.html" target="_blank" rel="noopener">MUMINS</a> and <a href="https://vision-banana.github.io/" target="_blank" rel="noopener">Vision Banana</a>.</p>
+        <p>Icons from <a href="https://jpswalsh.github.io/academicons/" target="_blank" rel="noopener">Academicons</a> and <a href="https://fontawesome.com/" target="_blank" rel="noopener">Font Awesome</a>.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© Crisalix 2023</span>
+    </div>
+  </div>
+</footer>
+
+<button type="button" class="to-top" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<script src="static/js/main.js" defer></script>
+</body>
+</html>
