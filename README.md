@@ -13,7 +13,7 @@ Antonio Canela¹²³, Pol Caselles¹²³, Ibrar Malik¹²³, Eduard Ramon¹²\*,
 [![Project Page](https://img.shields.io/badge/Project_Page-blue)](https://a-canela.github.io/instantavatar/)
 [![arXiv](https://img.shields.io/badge/arXiv-2308.04868-b31b1b.svg)](https://arxiv.org/abs/2308.04868)
 
-**TL;DR:** InstantAvatar combines a multi-resolution voxel-grid neural field with differentiable surface rendering and a learned 3D head SDF shape prior to reconstruct full-head avatars from one or a few images in seconds (~100× faster than prior methods).
+**TL;DR:** InstantAvatar combines a multi-resolution voxel-grid neural field with differentiable surface rendering and a learned 3D head SDF shape prior to reconstruct full-head avatars from one or a few images in seconds.
 
 ---
 
