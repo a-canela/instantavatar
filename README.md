@@ -8,7 +8,7 @@ Antonio Canela¹²³, Pol Caselles¹²³, Ibrar Malik¹²³, Eduard Ramon¹²\*,
 ²Universitat Politècnica de Catalunya\
 ³Institut de Robòtica i Informàtica Industrial, CSIC-UPC
 
-\*This work was done prior to joining Amazon
+<sub>\*This work was done prior to joining Amazon.</sub>
 
 [![Project Page](https://img.shields.io/badge/Project_Page-blue)](https://a-canela.github.io/instantavatar/)
 [![arXiv](https://img.shields.io/badge/arXiv-2308.04868-b31b1b.svg)](https://arxiv.org/abs/2308.04868)
