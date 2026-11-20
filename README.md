@@ -17,7 +17,7 @@ Antonio Canela¹²³, Pol Caselles¹²³, Ibrar Malik¹²³, Eduard Ramon¹²\*,
 
 ---
 
-## 💻 Code (Proprietary)
+## 💻 Code Availability (Proprietary)
 
 This work was conducted as part of an industrial research collaboration with **Crisalix Labs**. Consequently, the underlying source code and trained models are proprietary assets of **Crisalix SA** and cannot be made publicly available.
 
