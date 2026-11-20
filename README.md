@@ -17,7 +17,7 @@ Antonio Canela¹²³, Pol Caselles¹²³, Ibrar Malik¹²³, Eduard Ramon¹²\*,
 
 ---
 
-## 💻 Code <sub>(Not Available)</sub>
+## 💻 Code ![Not Available](https://img.shields.io/badge/Not_Available-6e7681)
 
 This work was conducted as part of an industrial research collaboration with **Crisalix Labs**. Consequently, the underlying source code and trained models are proprietary assets of **Crisalix SA** and cannot be made publicly available.
 
